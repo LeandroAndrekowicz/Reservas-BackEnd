@@ -1,4 +1,4 @@
-import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ReserveEntity } from '../entity/reserve.entity';
 import { Repository } from 'typeorm';
@@ -19,6 +19,18 @@ export class ReserveService {
                 throw new InternalServerErrorException("Erro ao criar reserva");
             }
 
+            const dates = await this.reserveRepository.query(`
+                SELECT json_build_object('date', date) AS data FROM "Reserve";
+            `);
+
+            dates.map((data) => {
+                let aux = (new Date(data.data.date).toISOString().split('T')[0]);
+
+                if( aux === newReserve.date ) {
+                    throw new BadRequestException('A data selecionada não está disponivel para reserva!');
+                }
+            });
+
             await this.reserveRepository.save(reserveData);
 
             return reserveData 
@@ -36,4 +48,27 @@ export class ReserveService {
             : new InternalServerErrorException(error.message)
         }
     }
+
+    async findAllDates() {
+        try {
+            const dates = await this.reserveRepository.query(`
+                SELECT json_build_object('date', date) AS data FROM "Reserve";
+            `);
+
+            return dates
+            ? {
+                message: 'Busca realizada com sucesso!',
+                dates: dates
+            }
+            : {
+                message: 'Falha ao realizar busca!',
+                dates: []
+            }
+        } catch (error) {
+            throw error instanceof HttpException 
+            ? error 
+            : new InternalServerErrorException(error.message)
+        }
+    }
+
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ReserveService } from '../service/reserve.service';
 import { createReserveDTO } from '../dto\'s/create-reserve.dto';
 
@@ -11,5 +11,10 @@ export class ReserveController {
         @Body() newReserve : createReserveDTO
     ) {
         return await this.reserveService.createUser(newReserve);
+    }
+
+    @Get('/dates')
+    async findAllDates() {
+        return await this.reserveService.findAllDates();
     }
 }

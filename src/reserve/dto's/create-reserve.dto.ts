@@ -10,7 +10,6 @@ export class createReserveDTO {
     @IsNotEmpty()
     email: string;
 
-    @IsPhoneNumber('BR')
     @IsNotEmpty()
     phone: string;
 

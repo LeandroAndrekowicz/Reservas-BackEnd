@@ -13,9 +13,9 @@ export class ReserveEntity {
     email: string;
 
     @Column()
-    phone: string;
+    phone: string; 
 
-    @Column()
+    @Column({unique: true})
     date: Date;
 
     @CreateDateColumn({type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)"})
